@@ -1,0 +1,19 @@
+<aside class="recPanel">
+  <div class="profilePreview row smallPadding">
+    <img src="{{ user.image_url }}" alt="" />
+    <h2 class="username smallPadding">{{ user.username }}</h2>
+  </div>
+  <div class="suggestion">
+    <p class="smallPadding subtitle"><b>Suggestions for you</b></p>
+    {% for suggestion in suggestions %}
+    <div class="suggestedProfile row">
+      <img src="{{suggestion.image_url}}" alt="" />
+      <div>
+        <p><b>{{suggestion.username}}</b></p>
+        <p class="subtitle">suggested for you</p>
+      </div>
+      <a href="{{suggestion.profile_url}}">follow</a>
+    </div>
+    {% endfor %}
+  </div>
+</aside>
