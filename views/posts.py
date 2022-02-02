@@ -18,7 +18,8 @@ class PostListEndpoint(Resource):
         # 1. No security implemented; 
         # 2. limit is hard coded (versus coming from the query parameter)
         # 3. No error checking
-        data = Post.query.limit(20).all()
+        authorized_user_ids = get_authorized_user_ids(self.current_user)
+        data = Post.query.filter(Post.user_id.in_(authorized_user_ids)).limit(request.args["limit"]).all()
 
         data = [
             item.to_dict() for item in data
@@ -89,7 +90,7 @@ class PostDetailEndpoint(Resource):
 def initialize_routes(api):
     api.add_resource(
         PostListEndpoint, 
-        '/api/posts', '/api/posts/', 
+        '/api/posts', '/api/posts/<int:limit>', 
         resource_class_kwargs={'current_user': api.app.current_user}
     )
     api.add_resource(
