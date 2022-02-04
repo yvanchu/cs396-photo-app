@@ -159,37 +159,40 @@ from flask import Response, request
 # query_posts('hjv4599')
 
 
-# #######################################
-# # Example 7: Flask + SQL Alchemy Demo #
-# #######################################
-# def id_is_integer_or_400_error(func):
-#     def wrapper(self, id, *args, **kwargs):
-#         try:
-#             int(id)
-#             return func(self, id, *args, **kwargs)
-#         except:
-#             return Response(
-#                 json.dumps({'message': '{0} must be an integer.'.format(id)}), 
-#                 mimetype="application/json", 
-#                 status=400
-#             )
-#     return wrapper
+#######################################
+# Example 7: Flask + SQL Alchemy Demo #
+#######################################
 
-# def handle_db_insert_error(func):
-#     def wrapper(self, *args, **kwargs):
-#         try:
-#             return func(self, *args, **kwargs)
-#         except:
-#             import sys
-#             db_message = str(sys.exc_info()[1]) # stores DB error message
-#             print(db_message)                   # logs it to the console
-#             message = 'Database Insert error. Make sure your post data is valid.'
-#             post_data = request.get_json()
-#             post_data['user_id'] = self.current_user.id
-#             response_obj = {
-#                 'message': message, 
-#                 'db_message': db_message,
-#                 'post_data': post_data
-#             }
-#             return Response(json.dumps(response_obj), mimetype="application/json", status=400)
-#     return wrapper
+
+
+def id_is_integer_or_400_error(func):
+    def wrapper(self, id, *args, **kwargs):
+        try:
+            int(id)
+            return func(self, id, *args, **kwargs)
+        except:
+            return Response(
+                json.dumps({'message': '{0} must be an integer.'.format(id)}), 
+                mimetype="application/json", 
+                status=400
+            )
+    return wrapper
+
+def handle_db_insert_error(func):
+    def wrapper(self, *args, **kwargs):
+        try:
+            return func(self, *args, **kwargs)
+        except:
+            import sys
+            db_message = str(sys.exc_info()[1]) # stores DB error message
+            print(db_message)                   # logs it to the console
+            message = 'Database Insert error. Make sure your post data is valid.'
+            post_data = request.get_json()
+            post_data['user_id'] = self.current_user.id
+            response_obj = {
+                'message': message, 
+                'db_message': db_message,
+                'post_data': post_data
+            }
+            return Response(json.dumps(response_obj), mimetype="application/json", status=400)
+    return wrapper

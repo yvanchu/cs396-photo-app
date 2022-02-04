@@ -11,8 +11,12 @@ class FollowingListEndpoint(Resource):
         self.current_user = current_user
     
     def get(self):
-        # Your code here
-        return Response(json.dumps([]), mimetype="application/json", status=200)
+        data = Following.query.filter(Following.user_id == self.current_user.id).all()
+
+        data = [
+            item.to_dict_following() for item in data
+        ]
+        return Response(json.dumps(data), mimetype="application/json", status=200)
 
     def post(self):
         # Your code here

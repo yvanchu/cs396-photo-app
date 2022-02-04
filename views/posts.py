@@ -1,9 +1,11 @@
+from distutils.log import error
 from flask import Response, request
 from flask_restful import Resource
 from models import Post, User, db
 from . import can_view_post, get_authorized_user_ids
 import json
 from sqlalchemy import and_
+from my_decorators import id_is_integer_or_400_error
 
 def get_path():
     return request.host_url + 'api/posts/'
@@ -15,11 +17,26 @@ class PostListEndpoint(Resource):
 
     def get(self):
         # TODO: 
-        # 1. No security implemented; 
-        # 2. limit is hard coded (versus coming from the query parameter)
-        # 3. No error checking
+        # DONE 1. No security implemented; 
+        # DONE 2. limit is hard coded (versus coming from the query parameter)
+        # DONE 3. No error checking using wrapper
         authorized_user_ids = get_authorized_user_ids(self.current_user)
-        data = Post.query.filter(Post.user_id.in_(authorized_user_ids)).limit(request.args["limit"]).all()
+
+        # might need to use wrappers
+        if "limit" in request.args:
+            try:
+                limitNumber = int(request.args["limit"])
+                if limitNumber > 50:
+                    raise NameError("limit greater than 50")
+            except:
+                return Response(
+                json.dumps({'message': '{0} must be an integer less than 50.'.format(request.args["limit"])}), 
+                mimetype="application/json", 
+                status=400
+                )
+        else:
+            limitNumber = 10
+        data = Post.query.filter(Post.user_id.in_(authorized_user_ids)).limit(limitNumber).all()
 
         data = [
             item.to_dict() for item in data
@@ -78,6 +95,7 @@ class PostDetailEndpoint(Resource):
         }
         return Response(json.dumps(serialized_data), mimetype="application/json", status=200)
 
+    @id_is_integer_or_400_error
     def get(self, id):
         post = Post.query.get(id)
 
@@ -90,7 +108,7 @@ class PostDetailEndpoint(Resource):
 def initialize_routes(api):
     api.add_resource(
         PostListEndpoint, 
-        '/api/posts', '/api/posts/<int:limit>', 
+        '/api/posts', '/api/posts/', 
         resource_class_kwargs={'current_user': api.app.current_user}
     )
     api.add_resource(
@@ -98,3 +116,4 @@ def initialize_routes(api):
         '/api/posts/<id>', '/api/posts/<id>/',
         resource_class_kwargs={'current_user': api.app.current_user}
     )
+
