@@ -163,7 +163,32 @@ from flask import Response, request
 # Example 7: Flask + SQL Alchemy Demo #
 #######################################
 
+def test(func):
+    def wrapper(self, post_id, id, *args, **kwargs):
+        try:
+            int(post_id)
+            int(id)
+            return func(self, post_id, *args, **kwargs)
+        except:
+            return Response(
+                json.dumps({'message': '{0} must be an integer.'.format(id)}), 
+                mimetype="application/json", 
+                status=400
+            )
+    return wrapper
 
+def post_id_is_integer_or_400_error(func):
+    def wrapper(self, post_id, *args, **kwargs):
+        try:
+            int(post_id)
+            return func(self, post_id, *args, **kwargs)
+        except:
+            return Response(
+                json.dumps({'message': '{0} must be an integer.'.format(post_id)}), 
+                mimetype="application/json", 
+                status=400
+            )
+    return wrapper
 
 def id_is_integer_or_400_error(func):
     def wrapper(self, id, *args, **kwargs):

@@ -48,6 +48,12 @@ class PostListEndpoint(Resource):
     def post(self):
         body = request.get_json()
         image_url = body.get('image_url')
+        if not image_url:
+            return Response(
+                json.dumps({'message': 'image_url is required'}), 
+                mimetype="application/json", 
+                status=400
+                )
         caption = body.get('caption')
         alt_text = body.get('alt_text')
         user_id = self.current_user.id # id of the user who is logged in
@@ -63,6 +69,7 @@ class PostDetailEndpoint(Resource):
     def __init__(self, current_user):
         self.current_user = current_user
         
+    @id_is_integer_or_400_error
     def patch(self, id):
         post = Post.query.get(id)
 
@@ -80,6 +87,7 @@ class PostDetailEndpoint(Resource):
         db.session.commit()        
         return Response(json.dumps(post.to_dict()), mimetype="application/json", status=200)
     
+    @id_is_integer_or_400_error
     def delete(self, id):
 
         # a user can only delete their own post:
