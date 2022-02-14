@@ -1,7 +1,14 @@
-<header class="navbar">
-  <h1 class="padded">Photo App</h1>
-  <div class="row padded">
-    <p class="padded">{{ user.username }}</p>
-    <a href="https://yvanchu.me/">Sign out</a>
-  </div>
-</header>
+<nav class="main-nav">
+    <h1>Photo App</h1>
+    <ul>
+        <li>
+            {% if request.url_rule.endpoint == 'api_docs' %}
+                <a href="/">Home</a>
+            {% else %}
+                <a href="/api">API Docs</a>
+            {% endif %}
+        </li>
+        <li><span>{{ user.username }}</span></li>
+        <li><a href="#">Sign out</a></li>
+    </ul>
+</nav>
