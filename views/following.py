@@ -1,6 +1,6 @@
 from flask import Response, request
 from flask_restful import Resource
-from models import Following, User, db
+from models import Following, User, db, following
 import json
 from my_decorators import handle_db_insert_error
 
@@ -45,8 +45,13 @@ class FollowingDetailEndpoint(Resource):
         self.current_user = current_user
     
     def delete(self, id):
-        # Your code here
-        return Response(json.dumps({}), mimetype="application/json", status=200)
+        following = Following.query.filter_by(id=id).delete()
+        db.session.commit()
+
+        serialized_data = {
+            'message': 'Following {0} successfully deleted.'.format(id)
+        }
+        return Response(json.dumps(serialized_data), mimetype="application/json", status=200)
 
 
 def initialize_routes(api):
