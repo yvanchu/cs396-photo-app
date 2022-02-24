@@ -31,13 +31,14 @@ p {
 }
 
 .card {
-  border: solid 1px #dbdbdb;
+  /* border: solid 1px #dbdbdb; */
   margin-top: 7.5px;
   margin-bottom: 7.5px;
+  width: 100%;
 }
 
 .commentSection {
-  border: solid 1px #dbdbdb;
+  /* border: solid 1px #dbdbdb; */
 }
 
 .card > * {
@@ -67,7 +68,7 @@ p {
   border: solid 1px #dbdbdb;
   margin-top: 7.5px;
   margin-bottom: 7.5px;
-  width: 566px;
+  /* width: 566px; */
   display: flex;
   flex-direction: row;
   overflow-y: hidden;
@@ -86,10 +87,6 @@ p {
 
 .left {
   padding-right: 293px;
-}
-
-.postPanel {
-  width: 566px;
 }
 
 .row {
@@ -113,8 +110,9 @@ img {
   height: 50px;
 }
 
-.card > .post {
-  width: 566px;
+.post {
+  width: 100%;
+  min-width: inherit;
   height: auto;
   border-radius: 0;
   margin: 0;
@@ -175,12 +173,18 @@ button {
   padding: 5px;
   margin: 5px;
   cursor: pointer;
-  width: inherit;
-  height: inherit;
+  /* width: inherit;
+  height: inherit; */
 }
 
 .far.fa-2x {
   margin: 0;
+}
+
+.x-button {
+  color: white;
+  font-size: 2em;
+  background-color: inherit;
 }
 
 i {
@@ -191,6 +195,15 @@ input {
   border: none;
 }
 
+.fas.fa-heart {
+  color: rgb(175, 21, 21);
+}
+
+.modal-comment {
+  overflow: auto;
+  height: inherit;
+}
+
 @media only screen and (max-width: 893px) {
   .recPanel {
     display: none;
@@ -199,4 +212,79 @@ input {
   .left {
     padding-right: 0px;
   }
+}
+
+/* sarah's css */
+#posts {
+  /* padding: 10px; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 50vw;
+  min-width: 540px;
+  /* border: solid 1px #dbdbdb; */
+  background-color: #fff;
+}
+
+.stories {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  width: 50vw;
+  min-width: 540px;
+  border: solid 1px #dbdbdb;
+  margin-bottom: 30px;
+  background-color: #fff;
+  overflow: hidden;
+}
+.stories > div {
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.stories > div .pic {
+  min-width: 50px;
+  min-height: 50px;
+  border: solid 3px #dbdbdb;
+  border-radius: 27px;
+}
+.stories p {
+  margin-top: 4px;
+  margin-bottom: 0px;
+  font-size: 0.8em;
+  color: #999;
+  width: 66px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.modal-bg {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(50, 50, 50, 0.8);
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-bg button {
+  position: fixed;
+  right: 20px;
+  top: 20px;
+}
+
+.modal {
+  background-color: white;
+  width: 80vw;
+  height: 80vh;
+  border-radius: 5px;
 }

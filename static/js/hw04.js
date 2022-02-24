@@ -50,7 +50,10 @@ const suggestion2Html = (suggestion) => {
       <p><b>${suggestion.username}</b></p>
       <p class="subtitle">suggested for you</p>
     </div>
-    <button href="${suggestion.profile_url}" data-user-id="${suggestion.id}" onclick="toggleFollow(event);">follow</button>
+    <button 
+        aria-label="Follow"
+        aria-checked="false"
+        href="${suggestion.profile_url}" data-user-id="${suggestion.id}" onclick="toggleFollow(event);">follow</button>
   </div>
     `;
 };
@@ -70,7 +73,7 @@ const createFollower = (userId, elem) => {
     user_id: userId,
   };
 
-  fetch("https://cs396-photo-app.herokuapp.com/api/following/", {
+  fetch("/api/following/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -84,11 +87,13 @@ const createFollower = (userId, elem) => {
       elem.classList.remove("follow");
       console.log(data); //in case we want to unfollow this person
       elem.setAttribute("data-following-id", data.id);
+      elem.setAttribute("aria-checked", "true");
+      elem.setAttribute("aria-label", "Unfollow");
     });
 };
 
 const deleteFollower = (followingId, elem) => {
-  const deleteUrl = `https://cs396-photo-app.herokuapp.com/api/following/${followingId}`;
+  const deleteUrl = `/api/following/${followingId}`;
   console.log(deleteUrl);
   fetch(deleteUrl, {
     method: "DELETE",
@@ -101,18 +106,95 @@ const deleteFollower = (followingId, elem) => {
       elem.classList.remove("unfollow");
       //   console.log(data); in case we want to unfollow this person
       elem.removeAttribute("data-following-id");
+      elem.setAttribute("aria-checked", "false");
+      elem.setAttribute("aria-label", "Follow");
     });
 };
 
-const post2Html = (post) => {
-  // {% if post.comments|length() > 1 %}
-  // <a href="${post.image_url}"
-  //   >View all ${post.comments | length()} comments</a
-  // >
-  // {% endif %} {% for comment in post.comments[:1] %}
-  // <p class="comments"><b>${comment.user.username}</b>${comment.text}</p>
-  // {% endfor %}
+const createLike = (event) => {
+  const elem = event.currentTarget;
+  fetch(`/api/posts/${event.currentTarget.dataset.postId}/likes/`, {
+    method: "POST",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data); //liked data
+      // elem.setAttribute("data-like-id", data.id);
+      displayPosts();
+    });
+};
 
+const deleteLike = (event) => {
+  const elem = event.currentTarget;
+  fetch(
+    `/api/posts/${event.currentTarget.dataset.postId}/likes/${elem.dataset.likeId}`,
+    {
+      method: "DELETE",
+    }
+  )
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data); //liked data
+      displayPosts();
+    });
+};
+
+const createBookmark = (event) => {
+  const elem = event.currentTarget;
+  fetch(`/api/bookmarks/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      post_id: elem.dataset.postId,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data); //liked data
+      // elem.setAttribute("data-like-id", data.id);
+      displayPosts();
+    });
+};
+
+const deleteBookmark = (event) => {
+  const elem = event.currentTarget;
+  fetch(`/api/bookmarks/${elem.dataset.bookmarkId}`, {
+    method: "DELETE",
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data); //liked data
+      displayPosts();
+    });
+};
+
+const postComment = (event, postId) => {
+  event.preventDefault();
+  const textInput = document.getElementById(`comment-${postId}`).value;
+  if (textInput !== "") {
+    fetch(`/api/comments/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        post_id: postId,
+        text: textInput,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data); //liked data
+        // elem.setAttribute("data-like-id", data.id);
+        displayPosts();
+      });
+  }
+};
+
+const post2Html = (post) => {
+  // <a href="${post.user.profile_url}">read more captions</a>
   return `
     <div class="card">
     <div class="row spaceBetween">
@@ -127,31 +209,50 @@ const post2Html = (post) => {
     <div>
       <div class="row spaceBetween">
         <div>
-          <button aria-label="like"><i class="far fa-heart fa-2x"></i></button
+          <button aria-label="like" aria-checked="${!!post.current_user_like_id}" data-post-id="${
+    post.id
+  }" data-like-id="${post.current_user_like_id}" onclick="${
+    post.current_user_like_id ? "deleteLike(event)" : "createLike(event)"
+  }"><i class="fa${
+    post.current_user_like_id ? "s" : "r"
+  } fa-heart fa-2x"></i></button
           ><button aria-label="comment">
             <i class="far fa-comment fa-2x"></i></button
           ><button aria-label="send">
             <i class="far fa-paper-plane fa-2x"></i>
           </button>
         </div>
-        <button aria-label="bookmark">
-          <i class="far fa-bookmark fa-2x"></i>
+        <button aria-label="bookmark" aria-checked="${!!post.current_user_bookmark_id}" data-post-id="${
+    post.id
+  }" data-bookmark-id="${post.current_user_bookmark_id}" onclick="${
+    post.current_user_bookmark_id
+      ? "deleteBookmark(event)"
+      : "createBookmark(event)"
+  }">
+          <i class="fa${
+            post.current_user_bookmark_id ? "s" : "r"
+          } fa-bookmark fa-2x"></i>
         </button>
       </div>
-      <p><b>${post.likes} likes</b></p>
+      <p><b>${post.likes.length} like${
+    post.likes.length != 1 ? "s" : ""
+  }</b></p>
       <p class="caption">
         <b>${post.user.username}</b> ${post.caption}
-        <a href="${post.user.profile_url}">read more captions</a>
       </p>
+      ${displayComments(post.comments, post.id)}
       <p class="timestamp">${post.display_time}</p>
       <div class="row commentSection">
         <button aria-label="smile"><i class="far fa-smile fa-2x"></i></button>
+        <form onclick="postComment(event, ${post.id});">
         <input
           type="text"
           class="grow"
           placeholder="Add a comment..."
-          aria-label="comment"
-        /><a href="https://yvanchu.me" class="commentButton"> post </a>
+          aria-label="add a comment"
+          id="comment-${post.id}"
+        /><input type="submit" class="commentButton" value="Post" />
+        </form>
       </div>
     </div>
   </div>
@@ -164,6 +265,80 @@ const displayPosts = () => {
     .then((posts) => {
       const html = posts.map(post2Html).join("\n");
       document.querySelector("#posts").innerHTML = html;
+    });
+};
+
+const displayComments = (comments, postId) => {
+  // {% if post.comments|length() > 1 %}
+  // {% endif %} {% for comment in post.comments[:1] %}
+  // <p class="comments"><b>${comment.user.username}</b>${comment.text}</p>
+  // {% endfor %}
+  let html = "";
+  if (comments.length > 1) {
+    html += `<button aria-label="view all comments" onclick="showPostDetail(event);" data-post-id=${postId}
+    id="view-all-comment-${postId}">View all ${comments.length} comments</button
+  >`;
+  }
+  if (comments && comments.length > 0) {
+    html += `
+    <p class="comments"><b>${
+      comments[comments.length - 1].user.username + " "
+    }</b>${comments[comments.length - 1].text}</p>
+    `;
+  }
+  return html;
+};
+
+const destroyModal = (ev, postId) => {
+  document.querySelector("#modal-container").innerHTML = "";
+  document.querySelector(`#view-all-comment-${postId}`).focus();
+};
+
+const showPostDetail = (ev) => {
+  const postId = ev.currentTarget.dataset.postId;
+  fetch(`/api/posts/${postId}`)
+    .then((response) => response.json())
+    .then((post) => {
+      const html = `
+              <div class="modal-bg">
+                  <button onclick="destroyModal(event, ${
+                    post.id
+                  })" aria-text="close modal" id="close-button"><p class="x-button">X</p></button>
+                  <div class="modal row">
+                    <img src="${post.image_url}" alt="" class="post" />
+                    <div class="col modal-comment">
+                      <div class="row">
+                        <img src="${post.image_url}" />
+                        <h2>${post.user.username}</h2>
+                      </div>
+                      <div class="row">
+                      <img src="${post.user.image_url}" />
+                      <p class="caption">
+        <b>${post.user.username}</b> ${post.caption}
+      </p>
+      </div>
+                        ${post.comments
+                          .map(
+                            (comment) => `
+                            <div class="row">
+                            <img src="${comment.user.image_url}" />
+                                <p class="comments"><b>${
+                                  comment.user.username + " "
+                                }</b>${comment.text}</p>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                  </div>
+              </div>`;
+      document.querySelector("#modal-container").innerHTML = html;
+      document.querySelector("#close-button").focus();
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          destroyModal(event, post.id);
+        }
+      });
     });
 };
 
