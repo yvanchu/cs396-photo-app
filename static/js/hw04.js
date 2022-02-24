@@ -305,7 +305,7 @@ const showPostDetail = (ev) => {
                     post.id
                   })" aria-text="close modal" id="close-button"><p class="x-button">X</p></button>
                   <div class="modal row">
-                    <img src="${post.image_url}" alt="" class="post" />
+                    <img src="${post.image_url}" alt="" class="post modal" />
                     <div class="col modal-comment">
                       <div class="row">
                         <img src="${post.image_url}" />
@@ -314,7 +314,7 @@ const showPostDetail = (ev) => {
                       <div class="row">
                       <img src="${post.user.image_url}" />
                       <p class="caption">
-        <b>${post.user.username}</b> ${post.caption}
+        <b class="no-padding">${post.user.username}</b> ${post.caption}
       </p>
       </div>
                         ${post.comments
@@ -322,7 +322,7 @@ const showPostDetail = (ev) => {
                             (comment) => `
                             <div class="row">
                             <img src="${comment.user.image_url}" />
-                                <p class="comments"><b>${
+                                <p class="comments"><b class="no-padding">${
                                   comment.user.username + " "
                                 }</b>${comment.text}</p>
                             </div>

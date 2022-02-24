@@ -204,6 +204,20 @@ input {
   height: inherit;
 }
 
+.modal-comment * {
+  padding: 10px;
+}
+
+b.no-padding {
+  padding: 0px;
+}
+
+.modal.post {
+  height: 80vh;
+  width: auto;
+  max-width: 50vw;
+}
+
 @media only screen and (max-width: 893px) {
   .recPanel {
     display: none;
