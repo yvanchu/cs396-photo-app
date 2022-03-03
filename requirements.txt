@@ -13,3 +13,4 @@ Faker==4.0.3                # to install fake data
 gunicorn==20.0.4
 
 html5lib==1.1
+numpy
