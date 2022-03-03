@@ -4,10 +4,10 @@ from flask import (
 from models import User
 import flask_jwt_extended
 
-@flask_jwt_extended.jwt_required()
+# @flask_jwt_extended.jwt_required()
 def logout():
     # hint:  https://dev.to/totally_chase/python-using-jwt-in-cookies-with-a-flask-app-and-restful-api-2p75
-    response = make_response(redirect('/login'))
+    response = make_response(redirect('/login', 302))
     flask_jwt_extended.unset_jwt_cookies(response)
     return response
 
