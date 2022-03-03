@@ -170,9 +170,7 @@ const createBookmark = (event) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      headers: {
-        "X-CSRF-TOKEN": getCookie("csrf_access_token"),
-      },
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
     },
     body: JSON.stringify({
       post_id: elem.dataset.postId,
