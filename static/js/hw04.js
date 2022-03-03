@@ -9,7 +9,12 @@ const story2Html = (story) => {
 
 // fetch data from your API endpoint:
 const displayStories = () => {
-  fetch("/api/stories")
+  fetch("/api/stories", {
+    method: "GET",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    },
+  })
     .then((response) => response.json())
     .then((stories) => {
       const html = stories.map(story2Html).join("\n");
@@ -18,7 +23,12 @@ const displayStories = () => {
 };
 
 const displayUserProfile = () => {
-  fetch("/api/profile")
+  fetch("/api/profile", {
+    method: "GET",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    },
+  })
     .then((response) => response.json())
     .then((user) => {
       const html = `
@@ -59,7 +69,12 @@ const suggestion2Html = (suggestion) => {
 };
 
 const displaySuggestions = () => {
-  fetch("/api/suggestions")
+  fetch("/api/suggestions", {
+    method: "GET",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    },
+  })
     .then((res) => res.json())
     .then((suggestions) => {
       const html = suggestions.map(suggestion2Html).join("\n");
@@ -77,6 +92,7 @@ const createFollower = (userId, elem) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
     },
     body: JSON.stringify(postData),
   })
@@ -97,6 +113,9 @@ const deleteFollower = (followingId, elem) => {
   console.log(deleteUrl);
   fetch(deleteUrl, {
     method: "DELETE",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    },
   })
     .then((res) => res.json())
     .then((data) => {
@@ -115,6 +134,9 @@ const createLike = (event) => {
   const elem = event.currentTarget;
   fetch(`/api/posts/${event.currentTarget.dataset.postId}/likes/`, {
     method: "POST",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    },
   })
     .then((res) => res.json())
     .then((data) => {
@@ -130,6 +152,9 @@ const deleteLike = (event) => {
     `/api/posts/${event.currentTarget.dataset.postId}/likes/${elem.dataset.likeId}`,
     {
       method: "DELETE",
+      headers: {
+        "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+      },
     }
   )
     .then((res) => res.json())
@@ -145,6 +170,9 @@ const createBookmark = (event) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      headers: {
+        "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+      },
     },
     body: JSON.stringify({
       post_id: elem.dataset.postId,
@@ -162,6 +190,9 @@ const deleteBookmark = (event) => {
   const elem = event.currentTarget;
   fetch(`/api/bookmarks/${elem.dataset.bookmarkId}`, {
     method: "DELETE",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    },
   })
     .then((res) => res.json())
     .then((data) => {
@@ -178,6 +209,7 @@ const postComment = (event, postId) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": getCookie("csrf_access_token"),
       },
       body: JSON.stringify({
         post_id: postId,
@@ -260,7 +292,12 @@ const post2Html = (post) => {
 };
 
 const displayPosts = () => {
-  fetch("/api/posts")
+  fetch("/api/posts", {
+    method: "GET",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    },
+  })
     .then((res) => res.json())
     .then((posts) => {
       const html = posts.map(post2Html).join("\n");
@@ -296,7 +333,12 @@ const destroyModal = (ev, postId) => {
 
 const showPostDetail = (ev) => {
   const postId = ev.currentTarget.dataset.postId;
-  fetch(`/api/posts/${postId}`)
+  fetch(`/api/posts/${postId}`, {
+    method: "GET",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    },
+  })
     .then((response) => response.json())
     .then((post) => {
       const html = `
@@ -340,6 +382,22 @@ const showPostDetail = (ev) => {
         }
       });
     });
+};
+
+const getCookie = (key) => {
+  let name = key + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(";");
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == " ") {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
 };
 
 const initPage = () => {
